@@ -1,0 +1,19 @@
+name: "GitHUb Action"
+
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Format code
+        run: npm run format
+      - name: Building
+        run: npm run build
+  
