@@ -1,21 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './Entities/user.entity';
 import { Repository } from 'typeorm';
+import { UserDto } from './Dto/User.dto';
 
 @Injectable()
 export class AppService {
-
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>
-  ){}
+    private userRepository: Repository<User>,
+  ) {}
 
-  getAll(): Promise<User[]> {
-    return this.userRepository.find();
+  async getAll() {
+    return await this.userRepository.find();
   }
 
-  getById(id: number): Promise<User> {
-    return this.userRepository.findOneBy({ id });
+  async getById(id: number) {
+    return await this.userRepository.findOneBy({ id });
+  }
+
+  async create(userDto: UserDto) {
+    return await this.userRepository.save(userDto);
+  }
+
+  async delete(id: number) {
+    const result = await this.userRepository.delete({ id });
+
+    if (!result.affected) {
+      throw new BadRequestException({
+        status: false,
+        message: `User with ID ${id} not found`,
+      });
+    }
   }
 }
